@@ -1,17 +1,27 @@
+# Minimum version should be set
 cmake_minimum_required (VERSION 2.8)
-project(ex5)
 
-find_package(MPI)
-set(CMAKE_CXX_COMPILER ${MPI_CXX_COMPILER})
+# name of the project and languages
+project(omp_hello C)
 
-enable_testing()
+# option to compile with OpenMP
+option(USE_OPENMP "Compile with support for OpenMP (if avaliable)" OFF)
 
-add_executable(ex5 ex5.cxx)
+# find openmp
+if (USE_OPENMP)
+    find_package(OpenMP)
+    if (OPENMP_FOUND)
+        # add the openmp flags
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    else ()
+        message(WARNING "OpenMP not found!")
+    endif ()
+endif ()
 
-add_test(NAME ex5_5 
-         COMMAND mpiexec -n 5 ./ex5)
+if (NOT OPENMP_FOUND)
+    # compile without OpenMP
+    add_definitions(-DNO_OMP)
+endif ()
 
-add_test(NAME ex5_shouldFail
-         COMMAND mpiexec -n 10 ./ex5)
-
-set_tests_properties(ex5_shouldFail PROPERTIES WILL_FAIL TRUE)
+# add the executable
+add_executable(omp_hello omp_hello.c)
