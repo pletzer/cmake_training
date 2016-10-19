@@ -2,12 +2,12 @@
 #include <iostream>
 
 int main(int argc, char** argv) {
-	MPI_Init(&argc, &argv);
+    MPI_Init(&argc, &argv);
 
-  int rk;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rk);
-  std::cout << "I'm " << rk << '\n';
+    int rk;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rk);
+    std::cout << "I'm " << rk << '\n';
 
-  MPI_Finalize();
-  return 0;
+    MPI_Finalize();
+    return 0;
 }

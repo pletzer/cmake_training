@@ -1,16 +1,28 @@
 cmake_minimum_required (VERSION 2.8)
-project(ex5)
+project(ex6 LANGUAGES CXX)
 
-find_package(MPI)
-set(CMAKE_CXX_COMPILER ${MPI_CXX_COMPILER})
+# set build type to release if not specified
+if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type (e.g. Debug)" FORCE)
+endif()
 
-enable_testing()
+# set custom build types, specific to compilers
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
+    # these flags are always passed
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fp-model precise")
 
-add_executable(ex6 ex6.cxx)
+    # set flags for custom release on pan (optimal on wm and sb/ib)
+    set(CMAKE_CXX_FLAGS_RELPAN "-O3 -DNDEBUG -xSSE4.2 -axAVX")
+    set(CMAKE_CXX_FLAGS_RELHOST "-O3 -DNDEBUG -xHost")
+# modify flags on GNU compiler too
+elseif (${CMAKE_COMPILER_IS_GNUCXX})
+    set(CMAKE_CXX_FLAGS_RELPAN "-O3 -DNDEBUG -march=westmere -mtune=sandybridge")
+    set(CMAKE_CXX_FLAGS_RELHOST "-O3 -DNDEBUG -march=native")
+# set defaults
+else ()
+    set(CMAKE_CXX_FLAGS_RELPAN "${CMAKE_CXX_FLAGS_RELEASE}")
+    set(CMAKE_CXX_FLAGS_RELHOST "${CMAKE_CXX_FLAGS_RELEASE}")
+endif ()
 
-#set(CPACK_GENERATOR "DEB")
-#set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Alex Pletzer") #required
-
-set(CPACK_GENERATOR "RPM")
-include(CPack)
-
+# add the src/ subdirectory
+add_subdirectory(src)
