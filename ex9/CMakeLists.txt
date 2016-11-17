@@ -14,4 +14,13 @@ add_test(NAME ex5_5
 add_test(NAME ex5_shouldFail
          COMMAND mpiexec -n 10 ./ex5)
 
+add_test(NAME ex5_parseOutput
+         COMMAND mpiexec -n 5 ./ex5)
+
+# test ex5_5 will pass if the return code is 0
+
+# test ex5_shouldFail is expected to fail
 set_tests_properties(ex5_shouldFail PROPERTIES WILL_FAIL TRUE)
+
+# test ex5_parseOutput will pass if the code prints out "PASSED"
+set_tests_properties(ex5_parseOutput PROPERTIES PASS_REGULAR_EXPRESSION "PASSED")
